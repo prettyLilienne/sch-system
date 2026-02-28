@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>TSU Admin Dashboard</title>
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')}}" >
+</head>
+<body>
+    <aside>
+        <div class="logo-box">
+        <h2>TSU Scholarship</h2>
+        <p>Management System</p>
+        </div>
+<nav>
+    <ul>
+        <!--function name is showPage, pageId is identified inside the parenthesis of function -->
+        <li class="nav-item active" onclick="showPage('dashboard')"><i
+data-lucide="layout-dashboard"></i> Dashboard</li>
+        <li class="nav-item" onclick="showPage('scholarships')"><i
+data-lucide="graduation-cap"></i> Scholarships</li>
+        <li class="nav-item" onclick="showPage('applications')"><i
+data-lucide="file-text"></i> Applications</li>
+        <li class="nav-item" onclick="showPage('analytics')"><i data-lucide="bar-chart-3"></i> Analytics</li>
+    </ul>
+</nav> 
+    <div class="profile-footer">   
+        <div class="avatar" style="border-radius: 10px; " class="profileIcon"></div>
+            <div>
+                <div style="font-size: 0.85rem; font-weight: 600;">Maria Santos</div>
+                    <div style="font-size: 0.7rem; opacity: 0.7;">Admin</div>
+            </div> 
+    </div>  
+</aside>
+<main>
+<header>
+    <div class="breadcrumb" id="header-breadcrumb"><i
+    data-lucide="layout-dashboard" style="width:14px"></i> Admin Dashboard
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap: 20px;">
+        <div class="notif" style="align-items: center; display: flex;" >
+            <button class="bulk-notif">Send</button>
+        </div>
+        <div style="display:flex; gap:20px; align-items:center; color: orange;;" id="profileIcon" class="profileIcon">
+            <div class="dropdown" > 
+                <button class="profile-circle" id="drop-btn"  onclick="menuToggle()">JK</button>
+            </div>
+        </div>  
+    </div>
+        <div class="profile-menu" id="profileMenu" style="margin-top: 10px;">  
+            <a href="#">My profile</a> 
+            <a href="#">Settings</a> 
+            <a href="#">Logout</a> 
+        </div>
+</header> 
+    <div id="page-dashboard" class="content-area active">
+    <h2>Admin Dashboard</h2>
+    <p class="sub-desc">Overview of scholarship programs and applicants</p>
+        <div class="stat-grid">
+            <div class="stat-card" style=><i data-lucide="book-open"></i>
+                <div class="stat-title">Total Scholarships</div>
+                <div class="stat-val">5</div>
+                <div class="stat-sub">5 active programs</div>
+            </div>
+        <div class="stat-card"><i data-lucide="users"></i>
+            <div class="stat-title">Total Applications</div>
+            <div class="stat-val">4</div>
+            <div class="stat-sub">2 pending review</div>
+        </div>
+    <div class="stat-card"><i data-lucide="file-check"></i>
+        <div class="stat-title">Qualified</div>
+        <div class="stat-val">23</div>
+        <div class="stat-sub">Qualified students</div>
+    </div>
+    <div class="stat-card"><i data-lucide="alert-triangle"></i>
+        <div class="stat-title">Unqualified</div>
+        <div class="stat-val">12</div>
+        <div class="stat-sub">Unqualified students</div>
+    </div>
+    </div>
+<div class="visual-grid">
+    <div class="card">
+    <h3>Application Status</h3>
+    <p class="stat-sub">Distribution of statuses</p>
+        <div class="chart-placeholder">Pie Chart Container</div>
+        <div style="margin-top:20px; font-size:0.85rem;">
+        <div style="display:flex; justify-content:space-between;
+            margin-bottom:5px;"><span>Pending</span> <strong>2</strong></div>
+        <div style="display:flex; justify-content:space-between;
+            margin-bottom:5px;"><span>Verified</span> <strong>1</strong></div>
+            </div>
+        </div>
+<div class="card">
+    <h3>Scholar Performance</h3>
+    <p class="stat-sub">Academic standing distribution</p>
+        <div class="chart-placeholder">Bar Chart Container</div>
+</div>
+<div class="card">
+    <h3>At Risk Scholars Monitor</h3>
+    <p class="stat-sub">Student requiring academic intervention</p>
+        <div class="chart-placeholder">Prediction of at risk stud Container</div>
+</div>
+    <div class="card">
+    <h3>High Performing Students</h3>
+    <p class="stat-sub">Top Scholars with Latin Honors Potentia  </p>
+        <div class="chart-placeholder">Not sure if this container is included</div>
+</div>
+</div>
+    </div>
+
+
+<div id="page-scholarships" class="content-area">
+    <div style="display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:5px;">
+    <h2>Scholarship Manager</h2>
+    <button  class="btn-primary" onclick="openModal()"><i data-lucide="plus"></i> + Add Scholarship</button>
+    </div>
+    <p class="sub-desc">Create and manage scholarship programs</p>
+    
+    <div class="table-container">
+    <table id="scholarshipTable">
+    <thead>
+    <tr>
+        <th style="width: 40%;">Name</th>
+        <th>Amount</th>
+        <th>Slots</th>
+        <th>Deadline</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody id="tableBody">
+        <tr>
+            {% for sch in scholarships %}
+            <tr>
+                <td>
+                    <strong>{{sch.name}}</strong><br>
+                    <small>{{sch.description}}</small>
+                </td>
+                <td>{{sch.amount}}</td>
+                <td>{{sch.slots}}</td>
+                <td>{{sch.deadlinestr}}</td>
+                <td>{{sch.status}}</td>
+                <td><button class="edit-btn" onclick="openEditModal(this)">E</button>
+                <button class="delete-btn" onclick="deleteModal(this)">T</button></td>
+        </tr>
+        {% endfor %}
+
+    </table>
+    </div>
+</div>
+
+
+<div id="page-applications" class="content-area">
+    <h2>Application Review</h2>
+    <p class="sub-desc">Review and verify student scholarship applications</p>
+
+<div class = "search-container"> 
+    <input type="text" name="sInput" id="sInput" placeholder="Search a name..." onkeyup="filterTable()" >
+</div>
+
+    <div class="stat-grid" style="padding-top: 10px;">
+    <div class="stat-card" style="box-shadow: 0 0 2px var(--accent-orange) ; background: rgb(255, 240, 217);"><div
+        class="stat-val">2</div><div class="stat-title">Pending Review</div></div>
+    <div class="stat-card" style="box-shadow: 0 0 2px var(--accent-blue); background: rgb(144, 196, 255);"><div
+        class="stat-val">1</div><div class="stat-title">Verified</div></div>
+    <div class="stat-card" style="box-shadow: 0 0 2px var(--accent-green); background: rgb(189, 255, 189);"><div
+        class="stat-val">1</div><div class="stat-title">Approved</div></div>
+    <div class="stat-card" style="box-shadow: 0 0 2px var(--accent-red);  background: rgb(253, 190, 190);"><div
+        class="stat-val">0</div><div class="stat-title">Rejected</div></div>
+</div > 
+
+    <div class="table-container" >
+        <div id="noRes" class="modal-overlay" style="align-items: center;">
+             <h3>No results found</h3>
+        </div>
+        <table id="applicationTable" data-search-ignore-cols="1,2,3,4,5">
+        <thead>
+        <tr>
+            <th>Student</th>
+            <th>Submitted</th>
+            <th>Status</th>
+            <th>Actions</th></tr>
+        </thead>
+        <tbody id="tableBody">
+        <tr>
+            <td><strong>Juan Dela Cruz</strong></td>
+            <td>2024-02-15</td>
+            <td><span class="badge ">Pending</span></td>
+            <td><button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;" onclick="evaluation(this)">Evaluate</button></td>
+        </tr>
+  <tr>
+            <td><strong>Tony Stark</strong></td>
+            <td>2024-03-25</td>
+            <td><span class="badge">Pending</span></td>
+            <td><button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;" onclick="evaluation(this)">Evaluate</button></td>
+        </tr>
+  <tr>
+            <td><strong>Wanda Maximoff</strong></td>
+            <td>2024-06-01</td>
+            <td><span class="badge">Pending</span></td>
+            <td><button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;" onclick="evaluation(this)">Evaluate</button></td>
+        </tr>
+  <tr>
+            <td><strong>Chris Evans</strong></td>
+            <td>2024-11-15</td>
+            <td><span class="badge">Pending</span></td>
+            <td><button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;" onclick="evaluation(this)">Evaluate</button></td>
+        </tr>
+    </tbody>
+</table>
+</div>
+
+<div class="table-container" style="margin-top: 30px;">
+        <table id="applicationTable">
+        <thead>
+        <tr>
+            <th>Student</th>
+            <th>Scholarship</th>
+            <th>Suitability Scores</th>
+            <th>Submitted</th>
+            <th>Status</th>
+            <th>Actions</th></tr>
+        </thead>
+        <tbody id="tableBody">
+        <tr>
+            <td><strong>Peter Parker</strong></td>
+            <td>TSU Academic Excellence</td>
+            <td><span class="badge" style="background:#e6f9f0;
+            color:#27ae60;">95%</span></td>
+            <td>2024-02-15</td>
+            <td><span class="badge badge-pending">Pending</span></td>
+            <td><button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;">Ch</button>
+            <button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;">Ex</button></td>
+        </tr>
+  <tr>
+            <td><strong>Tori Vega</strong></td>
+            <td>Financial Assisstance Grant</td>
+            <td><span class="badge" style="background:#e6f9f0;
+            color:#27ae60;">89%</span></td>
+            <td>2024-03-25</td>
+            <td><span class="badge badge-pending">Pending</span></td>
+            <td><button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;">Ch</button>
+            <button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;">Ex</button>
+            <button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;">Cha</button></td>
+        </tr>
+  <tr>
+            <td><strong>Jade West</strong></td>
+            <td>TSU Academic Excellence</td>
+            <td><span class="badge" style="background:#e6f9f0;
+            color:#27ae60;">92%</span></td>
+            <td>2024-06-01</td>
+            <td><span class="badge badge-pending">Rejected</span></td>
+            <td><button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;">Ch</button>
+            <button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;">Ex</button></td>
+        </tr>
+  <tr>
+            <td><strong>Aryana Hello</strong></td>
+            <td>Financial Assisstance Grant</td>
+            <td><span class="badge" style="background:#e6f9f0;
+            color:#27ae60;">87%</span></td>
+            <td>2024-11-15</td>
+            <td><span class="badge badge-pending">Pending</span></td>
+            <td><button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;">Ch</button>
+            <button class="btn-primary" style="padding:5px 10px;
+            font-size:0.8rem;">Ex</button></td>
+        </tr>
+    </tbody>
+</table>
+</div>
+</div>
+
+
+
+<!--ADD ANOTHER CONTER AREA HERE FOR ANALYTICS-->
+<div id="page-analytics" class="content-area">
+    <h2>Analytics</h2>
+    <p class="sub-desc">Overview of scholarship programs and applicants</p>
+        <div class="stat-grid">
+            <div class="stat-card"><i data-lucide="book-open"></i>
+                <div class="stat-title">On-Time Graduation</div>
+                <div class="stat-val">90%</div>
+                <div class="stat-sub">5 active programs</div>
+            </div>
+        <div class="stat-card"><i data-lucide="users"></i>
+            <div class="stat-title">Dean's Lister</div>
+            <div class="stat-val">45</div>
+            <div class="stat-sub">Current semester</div>
+        </div>
+    <div class="stat-card"><i data-lucide="file-check"></i>
+        <div class="stat-title">Latin's Honor Track</div>
+        <div class="stat-val">50</div>
+        <div class="stat-sub">Documents verified</div>
+    </div>
+    <div class="stat-card"><i data-lucide="alert-triangle"></i>
+        <div class="stat-title">At-Risk Scholars</div>
+        <div class="stat-val">5</div>
+        <div class="stat-sub">Requires attention</div>
+    </div>
+    </div>
+
+    <nav>
+
+    </nav>
+    <div id="pagenation">
+        <button></button>
+        <button></button>
+    </div>
+
+<div class="visual-grid">
+    <div class="card">
+    <h3>On-time Graduation Rate</h3>
+    <p class="stat-sub">Yearly Graduation statistics</p>
+        <div class="chart-placeholder">Pie Chart Container</div>
+            <div style="margin-top:20px; font-size:0.85rem;">
+            <div style="display:flex; justify-content:space-between;
+            margin-bottom:5px;"><span>Pending</span> <strong>2</strong></div>
+            <div style="display:flex; justify-content:space-between;
+            margin-bottom:5px;"><span>Verified</span> <strong>1</strong></div>
+            </div>
+        </div>
+<div class="card">
+    <h3>Latin Honors Distribution</h3>
+    <p class="stat-sub">Scholars by honors category</p>
+        <div class="chart-placeholder">Bar Chart Container</div>
+</div>
+<div class="card">
+    <h3>At Risk Scholars</h3>
+    <p class="stat-sub">Student requiring academic intervention</p>
+        <div class="chart-placeholder">Prediction of at risk stud Container</div>
+</div>
+    <div class="card">
+    <h3>High Performing Students</h3>
+    <p class="stat-sub">Top Scholars with Latin Honors Potentia  </p>
+        <div class="chart-placeholder">Not sure if this container is included</div>
+</div>
+</div>
+    </div>
+
+
+
+<div id="addModal" class="modal-overlay">
+    <form action ="/add_scholarship" method ="POST">
+    <div class="modal-content">
+    <div class="modal-header" style=" align-items: center;">
+        <h2 >Add Scholarship</h2>
+        <p style="font-size: 0.75rem; color: #777;">Fill in the scholarship details below.</p>
+    </div>
+    <div class="form-group">
+        <label>Scholarship Name</label>
+        <input name="name" id="add-name" type="text" class="form-input" placeholder="e.g. Academic Excellence">
+    </div>
+    <div class="form-group">
+        <label>Description</label>
+        <textarea name ="description" id="add-desc" class="form-input" placeholder="Describe the program..."></textarea>
+    </div>
+
+<div class="form-row">
+    <div class="form-group">
+        <label>Amount (₱)</label>
+        <input name="amount" id="add-amount" type="number" class="form-input" placeholder="50000">
+    </div>
+    <div class="form-group">
+        <label>Available Slots</label>
+        <input name="slots" id="add-slots" type="number" class="form-input" placeholder="20">
+    </div>
+    <div class="form-group">
+        <label>Deadline</label>
+        <input name="deadline" id="add-deadline" type="date" class="form-input">
+    </div>
+</div>
+    <div class="form-group">
+        <label >Status</label>
+        <input name="status" type="text" id="add-status" class="form-input" placeholder="active">
+    </div>
+    <div class="form-group">
+        <label>Requirements (one per line)</label>
+        <textarea name="requirements" id="add-reqs" class="form-input" placeholder="Add requirements"></textarea>
+    </div>
+        
+<div class="criteria-page" style="background: rgb(251, 248, 248); padding-top: 30px;">
+    <div class="criteria-header">
+        <div>
+        <h2 style="color: var(--primary);">Criteria</h2>
+        <p style="font-size: 0.75rem; color:black;">Add and fill in the criteria details below.</p>
+        </div>
+        <span style="background-color: var(--accent-orange); border-radius: 10px; padding-right: 10px; padding-left: 10px; color: #e6f9f0;">Total: <span id="criteriaTotal"></span> </span>
+    </div>
+
+    <div class="criteria-box"> 
+      <table id="criteriaTable" class="criteriaTable" > 
+      <thead> 
+        <tr> 
+          <th style="width: 50%;">Criteria</th> 
+          <th style="width: 30%;">Percentage</th> 
+          <th style="width: 20%;">Remove</th> 
+        </tr> 
+      </thead> 
+      <tbody style="column-gap: 10px;"> 
+        
+      </tbody> 
+    </table> 
+    <button class="add-criteria-btn" type="button" onclick="addCriteriaRow()" id="add-criteria-btn">+ Add Criteria</button> 
+    <br><br>
+    </div>
+    </form>
+    </div> 
+   
+
+<div class="modal-footer">
+    <button  class="btn-create" type="submit" onclick="closeModal">Create Scholarship</button>
+    <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+
+</div> 
+</div>
+</div>
+</div>
+
+
+<div id="editModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+    <h2 style="color: var(--primary);">Edit Scholarship</h2>
+    <p style="font-size: 0.75rem; color: #777;">Update the scholarship details below.</p>
+        </div>
+    <div class="form-group">
+<label>Scholarship Name</label> 
+<input type="text" id="edit-name" type="text" class="form-input">
+    </div> 
+                <div class="form-group">
+        <label>Description</label>
+        <textarea type="text" id="edit-desc" class="form-input"></textarea>
+                </div>
+    <div class="form-row">
+    <div class="form-group">
+    <label>Amount (₱)</label>
+    <input type="number" id="edit-amount" class="form-input">
+        </div>
+            <div class="form-group">
+                <label>Slots</label>
+                <input type="number" id="edit-slots" class="form-input">
+            </div>
+        <div class="form-group">
+            <label>Deadline</label>
+            <input type="date" id="edit-deadline" class="form-input">
+        </div>
+         <div class="form-group">
+            <label>Status</label>
+            <input type="text" id="edit-status" class="form-input">
+        </div>
+    </div>
+<div class="form-group">
+<label>Requirements (one per line)</label>
+<textarea id="edit-reqs" class="form-input"></textarea>
+</div> 
+<div class="modal-footer">
+    <button class="btn-save" type="button" onclick="saveChanges()">Save Changes</button>
+    <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+</div>
+</div>
+</div>
+
+
+<div id="evaluationModal" class="modal-overlay">
+    <div class="eval-content">
+        <div class="modal-header">
+            <h3 id="studName"></h3>
+        </div>
+    <div class="tableEval">
+        <table>
+            <thead>
+                <td>Criteria</td>
+                <td>Submitted Value</td>
+                <td>Submitted Document</td>
+                <td>Evaluation</td>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
+    <div class="del-btn">
+        <footer>
+            <button class="evalbtn-cancel" onclick="cancelEval()">Cancel</button>
+            <button class="evalbtn-evaluate" onclick="evalStud()">Evaluate</button>
+        </footer>
+    </div>
+    </div>
+</div>
+
+<div id="deleteModal" class="modal-overlay">
+    <div class="delete-modal">
+    <span style="size: 17px;">Are you sure you want to delete <strong id="deleteName"></strong> ?</span>
+    <div class="del-btn" >
+    <button onclick="confirmDel()" class="confirm-button">Confirm delete</button>
+    <button onclick="cancelDel()" class="cancel-button">Cancel</button>
+    </div>
+    </div>
+</div>
+
+<div id="reportModal" class="modal-overlay"> 
+    <div>
+        <div class="reportHeader" id="reportHeader">
+            <button onclick="filterReport()" class="filterReport" id="filterReport">Filter</button>
+        </div>
+    <h2>Report</h2>
+        <ul>
+            <li></li>
+        </ul>
+    </div>
+
+</div>
+
+
+
+
+<script src="{{ url_for('static', filename='script.js')}}"></script>
+</body>
+</html>
